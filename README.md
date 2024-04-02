@@ -21,10 +21,12 @@ sudo raspi-config
 
 ## Set Jumpers
 ![SX1268_LoRa_HAT](SX1268_LoRa_HAT.png)
+
 10: UART selection jumpers
 - A: control the LoRa module through USB TO UART
 - B: control the LoRa module through Raspberry Pi
 - C: access Raspberry Pi through USB TO UART
+
 11: LoRa mode selection jumpers
 - short M0, short M1: transmission mode
 - short M0, open M1: configuration mode
