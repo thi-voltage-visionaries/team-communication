@@ -2,6 +2,7 @@
 ## Team 2
 
 Lora Module: https://www.waveshare.com/wiki/SX1262_868M_LoRa_HAT
+STM32 LoRa Sigfox Discovery Kit: https://www.st.com/resource/en/user_manual/um2115-discovery-kit-for-lorawan-sigfox-and-lpwan-protocols-with-stm32l0-stmicroelectronics.pdf
 
 ## Installation on RPi:
 
