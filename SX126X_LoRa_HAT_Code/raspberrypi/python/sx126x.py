@@ -1,8 +1,15 @@
 # This file is used for LoRa and Raspberry pi4B related issues 
 
+import gpiod
 import RPi.GPIO as GPIO
 import serial
 import time
+
+
+chip = gpiod.Chip('gpiochip4')
+M0_line = chip.get_line(22)
+M1_line = chip.get_line(27)
+
 
 class sx126x:
 
@@ -37,8 +44,10 @@ class sx126x:
     SX126X_UART_BAUDRATE_1200 = 0x00
     SX126X_UART_BAUDRATE_2400 = 0x20
     SX126X_UART_BAUDRATE_4800 = 0x40
-    SX126X_UART_BAUDRATE_9600 = 0x60
     SX126X_UART_BAUDRATE_19200 = 0x80
+    SX126X_UART_BAUDRATE_9600 = 0x60
+    # Set Baudrate to 115200
+    #SX126X_UART_BAUDRATE_9600 = 0xE0
     SX126X_UART_BAUDRATE_38400 = 0xA0
     SX126X_UART_BAUDRATE_57600 = 0xC0
     SX126X_UART_BAUDRATE_115200 = 0xE0
@@ -85,13 +94,21 @@ class sx126x:
         self.freq = freq
         self.serial_n = serial_num
         self.power = power
+
+        M0_line.request(consumer="LORA", type=gpiod.LINE_REQ_DIR_OUT)
+        M1_line.request(consumer="LORA", type=gpiod.LINE_REQ_DIR_OUT)
+
+        M0_line.set_value(0)
+        M1_line.set_value(1)
+
+        
         # Initial the GPIO for M0 and M1 Pin
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(self.M0,GPIO.OUT)
-        GPIO.setup(self.M1,GPIO.OUT)
-        GPIO.output(self.M0,GPIO.LOW)
-        GPIO.output(self.M1,GPIO.HIGH)
+        # GPIO.setmode(GPIO.BCM)
+        # GPIO.setwarnings(True)
+        # GPIO.setup(self.M0,GPIO.OUT)
+        # GPIO.setup(self.M1,GPIO.OUT)
+        # GPIO.output(self.M0,GPIO.LOW)
+        # GPIO.output(self.M1,GPIO.HIGH)
 
         # The hardware UART of Pi3B+,Pi4B is /dev/ttyS0
         self.ser = serial.Serial(serial_num,9600)
@@ -104,8 +121,12 @@ class sx126x:
         self.send_to = addr
         self.addr = addr
         # We should pull up the M1 pin when sets the module
-        GPIO.output(self.M0,GPIO.LOW)
-        GPIO.output(self.M1,GPIO.HIGH)
+
+        M0_line.set_value(0)
+        M1_line.set_value(1)
+
+        # GPIO.output(self.M0,GPIO.LOW)
+        # GPIO.output(self.M1,GPIO.HIGH)
         time.sleep(0.1)
 
         low_addr = addr & 0xff
@@ -185,18 +206,18 @@ class sx126x:
                 r_buff = self.ser.read(self.ser.inWaiting())
                 if r_buff[0] == 0xC1:
                     pass
-                    # print("parameters setting is :",end='')
-                    # for i in self.cfg_reg:
-                        # print(hex(i),end=' ')
+                    print("parameters setting is :",end='')
+                    for i in self.cfg_reg:
+                        print(hex(i),end=' ')
                         
-                    # print('\r\n')
-                    # print("parameters return is  :",end='')
-                    # for i in r_buff:
-                        # print(hex(i),end=' ')
-                    # print('\r\n')
+                    print('\r\n')
+                    print("parameters return is  :",end='')
+                    for i in r_buff:
+                        print(hex(i),end=' ')
+                    print('\r\n')
                 else:
                     pass
-                    #print("parameters setting fail :",r_buff)
+                    print("parameters setting fail :",r_buff)
                 break
             else:
                 print("setting fail,setting again")
@@ -205,16 +226,22 @@ class sx126x:
                 print('\x1b[1A',end='\r')
                 if i == 1:
                     print("setting fail,Press Esc to Exit and run again")
-                    # time.sleep(2)
-                    # print('\x1b[1A',end='\r')
+                    time.sleep(2)
+                    print('\x1b[1A',end='\r')
 
-        GPIO.output(self.M0,GPIO.LOW)
-        GPIO.output(self.M1,GPIO.LOW)
+        M0_line.set_value(0)
+        M1_line.set_value(0)
+
+        # GPIO.output(self.M0,GPIO.LOW)
+        # GPIO.output(self.M1,GPIO.LOW)
         time.sleep(0.1)
 
     def get_settings(self):
         # the pin M1 of lora HAT must be high when enter setting mode and get parameters
-        GPIO.output(M1,GPIO.HIGH)
+
+        M1_line.set_value(1)
+
+        # GPIO.output(M1,GPIO.HIGH)
         time.sleep(0.1)
         
         # send command to get setting parameters
@@ -234,15 +261,22 @@ class sx126x:
             print("Node address is {0}.",addr_temp)
             print("Air speed is {0} bps"+ lora_air_speed_dic.get(None,air_speed_temp))
             print("Power is {0} dBm" + lora_power_dic.get(None,power_temp))
-            GPIO.output(M1,GPIO.LOW)
+
+            M1_line.set_value(0)
+
+            #GPIO.output(M1,GPIO.LOW)
 
 #
 # the data format like as following
 # "node address,frequence,payload"
 # "20,868,Hello World"
     def send(self,data):
-        GPIO.output(self.M1,GPIO.LOW)
-        GPIO.output(self.M0,GPIO.LOW)
+
+        M1_line.set_value(0)
+        M0_line.set_value(0)
+
+        # GPIO.output(self.M1,GPIO.LOW)
+        # GPIO.output(self.M0,GPIO.LOW)
         time.sleep(0.1)
 
         self.ser.write(data)
@@ -269,8 +303,15 @@ class sx126x:
                 #print('\x1b[2A',end='\r')
 
     def get_channel_rssi(self):
-        GPIO.output(self.M1,GPIO.LOW)
-        GPIO.output(self.M0,GPIO.LOW)
+
+        
+        M1_line.set_value(0)
+        M0_line.set_value(0)
+
+
+        # GPIO.output(self.M1,GPIO.LOW)
+        # GPIO.output(self.M0,GPIO.LOW)
+
         time.sleep(0.1)
         self.ser.flushInput()
         self.ser.write(bytes([0xC0,0xC1,0xC2,0xC3,0x00,0x02]))
