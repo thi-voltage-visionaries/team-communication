@@ -55,11 +55,14 @@ def send_json_file_continue(continue_or_not = True):
     if continue_or_not:
         global timer_task
         global seconds
-        with open(get_latest_json_file(), 'r') as f:
-            data = json.load(f)
-
-        data = bytes([255]) + bytes([255]) + bytes([18]) + bytes([255]) + bytes([255]) + bytes([12]) + "Battery Data:".encode()+str(data).encode()
-        node.send(data)
+        # send only if there is a new file
+        try:
+            with open(get_latest_json_file(), 'r') as f:
+                data = json.load(f)
+            data = bytes([255]) + bytes([255]) + bytes([18]) + bytes([255]) + bytes([255]) + bytes([12]) + "Battery Data:".encode()+str(data).encode()
+            node.send(data)
+        except:
+            print("No new file found")
         time.sleep(0.2)
         timer_task = Timer(seconds,send_json_file_continue)
         timer_task.start()
@@ -83,6 +86,7 @@ try:
     # it will send rpi cpu temperature every 10 seconds 
     seconds = 5
     
+    '''
     while True:
 
         if select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], []):
@@ -111,6 +115,21 @@ try:
             sys.stdout.flush()
             
         node.receive()
+    '''
+
+    # comment out if you want to select the sending mode
+    #----------------------------------------------------
+    timer_task = Timer(seconds,send_json_file_continue)
+    timer_task.start()
+    while True:
+        if sys.stdin.read(1) == '\x63':
+            timer_task.cancel()
+            print('\x1b[1A',end='\r')
+            print(" "*100)
+            print('\x1b[1A',end='\r')
+            break
+    sys.stdout.flush()
+    #----------------------------------------------------
         
 except:
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
