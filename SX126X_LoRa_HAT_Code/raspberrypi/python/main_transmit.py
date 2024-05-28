@@ -14,7 +14,7 @@ from glob import glob
 import os
 
 json_directory = '/home/test/Desktop/team-bms/battery_data_json'
-last_file = None
+last_file = ""
 
 
 old_settings = termios.tcgetattr(sys.stdin)
