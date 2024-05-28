@@ -14,6 +14,7 @@ from glob import glob
 import os
 
 json_directory = '/home/test/Desktop/team-bms/battery_data_json'
+last_file = None
 
 
 old_settings = termios.tcgetattr(sys.stdin)
@@ -35,6 +36,9 @@ def get_latest_json_file():
     if not files:
         return None
     latest_file = max(files, key=os.path.getctime)
+    if latest_file == last_file:
+        return None
+    last_file = latest_file
     return latest_file
 
 #   Read an json file and send the data once to another node
