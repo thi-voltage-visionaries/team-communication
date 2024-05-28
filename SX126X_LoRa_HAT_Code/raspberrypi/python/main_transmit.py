@@ -17,8 +17,7 @@ json_directory = '/home/test/Desktop/team-bms/battery_data_json'
 last_file = None
 seconds = 5
 
-old_settings = termios.tcgetattr(sys.stdin)
-tty.setcbreak(sys.stdin.fileno())
+
 
 
 #
