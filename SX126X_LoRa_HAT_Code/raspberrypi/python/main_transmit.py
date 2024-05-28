@@ -56,8 +56,9 @@ def send_json_file_continue(continue_or_not = True):
         global timer_task
         global seconds
         # send only if there is a new file
-        if get_latest_json_file() != None:
-            with open(get_latest_json_file(), 'r') as f:
+        latest_json_file = get_latest_json_file()
+        if latest_json_file != None:
+            with open(latest_json_file, 'r') as f:
                 data = json.load(f)
             data = bytes([255]) + bytes([255]) + bytes([18]) + bytes([255]) + bytes([255]) + bytes([12]) + "Battery Data:".encode()+str(data).encode()
             node.send(data)
