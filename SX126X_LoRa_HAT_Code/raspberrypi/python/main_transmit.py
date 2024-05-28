@@ -15,7 +15,7 @@ import os
 
 json_directory = '/home/test/Desktop/team-bms/battery_data_json'
 last_file = None
-
+seconds = 5
 
 old_settings = termios.tcgetattr(sys.stdin)
 tty.setcbreak(sys.stdin.fileno())
@@ -56,12 +56,12 @@ def send_json_file_continue(continue_or_not = True):
         global timer_task
         global seconds
         # send only if there is a new file
-        try:
+        if get_latest_json_file() != None:
             with open(get_latest_json_file(), 'r') as f:
                 data = json.load(f)
             data = bytes([255]) + bytes([255]) + bytes([18]) + bytes([255]) + bytes([255]) + bytes([12]) + "Battery Data:".encode()+str(data).encode()
             node.send(data)
-        except:
+        else:
             print("No new file found")
         time.sleep(0.2)
         timer_task = Timer(seconds,send_json_file_continue)
@@ -77,6 +77,13 @@ def send_json_file_continue(continue_or_not = True):
 
 node = sx126x.sx126x(serial_num = "/dev/ttyAMA0",freq=868,addr=34,power=22,rssi=True,air_speed=2400,relay=False)
 
+# comment out if you want to select the sending mode
+#----------------------------------------------------
+timer_task = Timer(seconds,send_json_file_continue)
+timer_task.start()
+#----------------------------------------------------
+
+'''
 try:
     time.sleep(1)
     print("Press \033[1;32mEsc\033[0m to exit")
@@ -86,7 +93,6 @@ try:
     # it will send rpi cpu temperature every 10 seconds 
     seconds = 5
     
-    '''
     while True:
 
         if select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], []):
@@ -115,21 +121,6 @@ try:
             sys.stdout.flush()
             
         node.receive()
-    '''
-
-    # comment out if you want to select the sending mode
-    #----------------------------------------------------
-    timer_task = Timer(seconds,send_json_file_continue)
-    timer_task.start()
-    while True:
-        if sys.stdin.read(1) == '\x63':
-            timer_task.cancel()
-            print('\x1b[1A',end='\r')
-            print(" "*100)
-            print('\x1b[1A',end='\r')
-            break
-    sys.stdout.flush()
-    #----------------------------------------------------
         
 except:
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
@@ -143,3 +134,4 @@ termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
 # print(" "*100)
 # print(" "*100)
 # print('\x1b[2A',end='\r')
+'''
