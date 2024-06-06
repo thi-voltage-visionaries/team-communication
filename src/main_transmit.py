@@ -38,7 +38,7 @@ while True:
     if latest_json_file != None:
         with open(latest_json_file, 'r') as f:
             data = json.load(f)
-        data = bytes([255]) + bytes([255]) + bytes([18]) + bytes([255]) + bytes([255]) + bytes([12]) + "Battery Data:".encode()+str(data).encode()
+        data = bytes([255]) + bytes([255]) + bytes([18]) + bytes([255]) + bytes([255]) + bytes([12]) + str(data).encode()
         node.send(data)
         print("New data sent")
     else:
