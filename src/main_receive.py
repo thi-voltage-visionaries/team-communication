@@ -27,7 +27,10 @@ node = sx126x.sx126x(serial_num = "/dev/ttyAMA0",freq=868,addr=0,power=22,rssi=T
 try:
     time.sleep(1)
     while True:
-        node.receive()
+        test = node.receive()
+        if test != None:
+
+            print("Received from sx126x: ",test)
 except:
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
     # print('\x1b[2A',end='\r')
