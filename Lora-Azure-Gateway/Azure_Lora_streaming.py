@@ -51,9 +51,9 @@ def iothub_client_telemetry_sample_run():
                 message.content_type = "application/json"
 
                 # Send the message
-                print( "Sending message: {}".format(message) )
+                print("Sending message: {}".format(message))
                 client.send_message(message)
-                print ( "Message successfully sent" )
+                print ("Message successfully sent")
 
 
     except KeyboardInterrupt:
