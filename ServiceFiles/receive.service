@@ -1,0 +1,14 @@
+[Unit]
+Description=Receives Lora Messages and sends to Azure
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/bp2/team-communication/Lora-Azure-Gateway/Azure_Lora_streaming.py
+WorkingDirectory=/home/bp2/team-communication/Lora-Azure-Gateway/
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=bp2
+
+[Install]
+WantedBy=multi-user.target
