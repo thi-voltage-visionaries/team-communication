@@ -56,6 +56,7 @@ PW: batteryproject
 ### SSH
 The transmit RPi has the hostname `bp1` and username `test`<br>
 The receive RPi has the hostname `bp2` and username `bp2`<br>
+Both users have the password: `batteryproject`<br>
 
 Connecting can be done over SSH<br>
 `ssh test@bp1`<br>
