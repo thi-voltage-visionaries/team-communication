@@ -37,7 +37,7 @@ while True:
     latest_json_file = get_latest_json_file()
     if latest_json_file != None:
         with open(latest_json_file, 'r') as f:
-            data = json.load(f)
+            data = f.read().replace('\n', '')
         data = bytes([255]) + bytes([255]) + bytes([18]) + bytes([255]) + bytes([255]) + bytes([12]) + str(data).encode()
         node.send(data)
         print("New data sent")
