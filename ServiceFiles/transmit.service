@@ -3,8 +3,8 @@ Description=Read Json data and transmit via Lora
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 /home/bp2/team-communication/LoraHatLibrary/main_transmit.py
-WorkingDirectory=/home/bp2/team-communication/LoraHatLibrary/
+ExecStart=/usr/bin/python3 /home/test/team-communication/LoraHatLibrary/main_transmit.py
+WorkingDirectory=/home/test/team-communication/LoraHatLibrary/
 StandardOutput=inherit
 StandardError=inherit
 Restart=always
